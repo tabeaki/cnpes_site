@@ -6,8 +6,8 @@ import Seo from './components/Seo';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-import { allowlistAddresses }  from "./components/allowlist";
-import { setting }  from "./consts/setting";
+import { allowlistAddresses }  from "../public/consts/allowlist";
+import { setting }  from "../public/consts/setting";
 
 const { MerkleTree } = require('merkletreejs');
 const keccak256 = require('keccak256');
