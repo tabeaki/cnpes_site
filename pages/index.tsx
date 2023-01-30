@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import Image from 'next/image';
 import Seo from './components/Seo';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 import { allowlistAddresses }  from "./components/allowlist";
 import { setting }  from "./consts/setting";
@@ -216,6 +217,7 @@ const Home: NextPage = () => {
       />
       <Header />
       <MintButton/>
+      <Footer />
     </div>
     
   );
