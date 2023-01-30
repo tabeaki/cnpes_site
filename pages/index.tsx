@@ -164,6 +164,7 @@ const Home: NextPage = () => {
         } else {
           await contract.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(tokenPrice)});//, gasLimit: 91000});
           alert('Starting to execute a transaction / トランザクションを開始しました');
+          location.reload();
         }
       }catch(err: any) {
       // Solidityから変換された文言をJSONへ変換
@@ -211,7 +212,7 @@ const Home: NextPage = () => {
       <Seo
           pageTitle={'CNPES'}
           pageDescription={'CNPES'}
-          pageImg={''}
+          pageImg={'https://cnpes-site.vercel.app/_next/image?url=%2Fmain_grap.png&w=1080&q=75'}
           pageImgWidth={1920}
           pageImgHeight={1005}
       />
