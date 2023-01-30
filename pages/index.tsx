@@ -28,7 +28,6 @@ const Home: NextPage = () => {
 
   const abi = setting.ABI;
   const contractAddress = setting.CONTRACT_ADDRESS;
-  const tokenPrice = setting.TOKEN_PRICE;
   useEffect(() => {
     const leafNodes = allowlistAddresses.map(addr => ethers.utils.solidityKeccak256(['address', 'uint16'], [addr[0] , addr[1]]));
     const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true});
@@ -158,11 +157,15 @@ const Home: NextPage = () => {
         hexProof = merkleTree.getHexProof(claimingAddress);    
       }
       const alNumber = Number(allowlistUserAmountData);
+      console.log('quantity=' + quantity);
+      console.log('alNumber=' + alNumber);
+      console.log('hexProof=' + hexProof);
       try{
         if(quantity == "0" || alNumber == 0){
           alert('Cannot mint if AL count is 0 or mint count is 0. / AL数が0またはミント数が0の場合はミントできません。');
         } else {
-          await contract.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(tokenPrice)});//, gasLimit: 91000});
+          const price = Number(setting.TOKEN_PRICE) * Number(quantity);
+          await contract.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(String(price))});//, gasLimit: 91000});
           alert('Starting to execute a transaction / トランザクションを開始しました');
           location.reload();
         }
