@@ -119,7 +119,7 @@ const Home: NextPage = () => {
 
     const mintQuantityPlus = async () =>{
       // ★AL条件無くなった時のロジックを考える必要があり。
-      if(mintQuantity == alNum){
+      if(mintQuantity == alNum || 5){
         return;
       } else {
         setmintQuantity(mintQuantity + 1);
