@@ -104,8 +104,6 @@ const Home: NextPage = () => {
         nameMap = allowlistAddresses.map( list => list[0]);
         addressId = nameMap.indexOf(address);
         const num = Number(allowlistAddresses[addressId][1]);
-        console.log('addressId=' + addressId);
-        console.log('num=' + num);
         if( addressId == -1){
           setAllowlistUserAmountData(0);
         } else {
