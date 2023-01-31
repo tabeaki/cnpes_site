@@ -119,7 +119,7 @@ const Home: NextPage = () => {
 
     const mintQuantityPlus = async () =>{
       // ★AL条件無くなった時のロジックを考える必要があり。
-      if(mintQuantity == alNum || mintQuantity == 5){
+      if(mintQuantity == alNum){
         return;
       } else {
         setmintQuantity(mintQuantity + 1);
@@ -157,9 +157,6 @@ const Home: NextPage = () => {
         hexProof = merkleTree.getHexProof(claimingAddress);    
       }
       const alNumber = Number(allowlistUserAmountData);
-      console.log('quantity=' + quantity);
-      console.log('alNumber=' + alNumber);
-      console.log('hexProof=' + hexProof);
       try{
         if(quantity == "0" || alNumber == 0){
           alert('Cannot mint if AL count is 0 or mint count is 0. / AL数が0またはミント数が0の場合はミントできません。');
