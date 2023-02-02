@@ -1,10 +1,10 @@
 export const setting = {
-    CONTRACT_ADDRESS: "0x57cF7F6D217253234FA4831fF6B9b4f6D22c7bBe",
-    CAHINID: '0x5',
-    DECIMALS: 5,
-    CHAIN_NAME: 'Goerli',
+    CONTRACT_ADDRESS: "0x57809B032e5883B4B3E774623c99B984A28e7fb1",
+    CAHINID: '0x1',
+    DECIMALS: 1,
+    CHAIN_NAME: 'ETH',
     COIN_NAME: 'ETH',
-    RPC_URLS: "https://goerli.infura.io/v3/d9a8d8a693da47db8cc8397ff08f9021",
+    RPC_URLS: "https://mainnet.infura.io/v3/d9a8d8a693da47db8cc8397ff08f9021",
     TOKEN_PRICE: '0.001',
     ABI: [
         'function totalSupply() public view virtual override returns (uint256)',
