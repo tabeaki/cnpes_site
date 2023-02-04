@@ -79,8 +79,12 @@ const Home: NextPage = () => {
     const getMerkleData = async () =>{
         const provider = await new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = await provider.getSigner();
-        const address = await signer.getAddress(); 
+        const address = await signer.getAddress();
+        console.log('address=' + address);
         nameMap = allowlistAddresses.map( list => list[0]);
+        console.log('nameMap =' + nameMap)
+        let alMap = allowlistAddresses.map( list => list[1]);
+        console.log('alMap =' + alMap)
         addressId = nameMap.indexOf(address);
         const num = Number(allowlistAddresses[addressId][1]);
         if( addressId == -1){
