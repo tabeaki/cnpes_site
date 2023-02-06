@@ -132,7 +132,7 @@ const Home: NextPage = () => {
       }
     };
 
-    // ガス代を30％減らす関数
+    // ガス代を30％増やす関数
     const increaseGasLimit = (estimatedGasLimit: BigNumber) => {
       return estimatedGasLimit.mul(130).div(100) // increase by 30%
     }
