@@ -6,7 +6,7 @@ import Seo from './components/Seo';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-import { allowlistAddresses }  from "../public/consts/mainAllowlist2";
+import { allowlistAddresses }  from "../public/consts/allowlist";
 import { setting }  from "../public/consts/setting";
 
 const { MerkleTree } = require('merkletreejs');
@@ -29,27 +29,27 @@ const Home: NextPage = () => {
   const abi = setting.ABI;
   const contractAddress = setting.CONTRACT_ADDRESS;
   useEffect(() => {
-    // const leafNodes = allowlistAddresses.map(addr => ethers.utils.solidityKeccak256(['address', 'uint16'], [addr[0] , addr[1]]));
-    // const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true});
+    const leafNodes = allowlistAddresses.map(addr => ethers.utils.solidityKeccak256(['address', 'uint16'], [addr[0] , addr[1]]));
+    const merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true});
 
-    // const rootHash = merkleTree.getRoot();
-    // console.log('Whitelist Merkle Tree\n', merkleTree.toString());
-    // console.log("Root Hash: ", "0x" + rootHash.toString('hex'));
+    const rootHash = merkleTree.getRoot();
+    console.log('Whitelist Merkle Tree\n', merkleTree.toString());
+    console.log("Root Hash: ", "0x" + rootHash.toString('hex'));
 
 
-    // const nameMap = allowlistAddresses.map( list => list[0] );
-    // let addressId = nameMap.indexOf(allowlistAddresses[0][0]);
-    // const claimingAddress = ethers.utils.solidityKeccak256(['address', 'uint16'], [allowlistAddresses[addressId][0] , allowlistAddresses[addressId][1]]);
+    const nameMap = allowlistAddresses.map( list => list[0] );
+    let addressId = nameMap.indexOf(allowlistAddresses[0][0]);
+    const claimingAddress = ethers.utils.solidityKeccak256(['address', 'uint16'], [allowlistAddresses[addressId][0] , allowlistAddresses[addressId][1]]);
 
-    // console.log("index : " , addressId);
-    // console.log("address : " , allowlistAddresses[addressId][0]);
-    // console.log("amount : " , allowlistAddresses[addressId][1]);
-    // console.log("claimingAddress : " , claimingAddress);
+    console.log("index : " , addressId);
+    console.log("address : " , allowlistAddresses[addressId][0]);
+    console.log("amount : " , allowlistAddresses[addressId][1]);
+    console.log("claimingAddress : " , claimingAddress);
 
-    // const hexProof = merkleTree.getHexProof(claimingAddress);
-    // console.log("hexProof : \n",hexProof);
+    const hexProof = merkleTree.getHexProof(claimingAddress);
+    console.log("hexProof : \n",hexProof);
 
-    // console.log(merkleTree.verify(hexProof, claimingAddress, rootHash));
+    console.log(merkleTree.verify(hexProof, claimingAddress, rootHash));
   });
 
   // ミントボタン用
@@ -101,16 +101,22 @@ const Home: NextPage = () => {
         const provider = await new ethers.providers.Web3Provider((window as any).ethereum);
         const signer = await provider.getSigner();
         const address = await signer.getAddress();
+        // allowlistAddressesはALでここからウォレットアドレスの一覧を取得
         nameMap = allowlistAddresses.map( list => list[0]);
+        // メタマスクのアドレスがウォレット一覧に存在する行番号を取得
         addressId = nameMap.indexOf(address);
+        // 上記で取得した行番号に並ぶAL数を取得
         const num = Number(allowlistAddresses[addressId][1]);
+        // nameMap.indexOf(address);で値がヒットしなかった場合にaddressId が-1となる
         if( addressId == -1){
+          // ALをいくつ持っているかをセットする
           setAllowlistUserAmountData(0);
         } else {
+          // 対象のコントラクト呼び出し
           const contract = await new ethers.Contract(contractAddress, abi, signer);
-
-          // AL数-現在のミント数で残りのAL数を出す
+          // AL数-現在のミント数をコントラクトから取得する＝残りのAL数を取得
           setAlNum(num - await contract.getConsumedAllocation(address));
+          // 持っているAL数を取得
           setAllowlistUserAmountData(num);
         }
     };
@@ -144,26 +150,31 @@ const Home: NextPage = () => {
       const quantity = String(mintQuantity);
       const contract = new ethers.Contract(contractAddress, abi, signer);
       const address = await signer.getAddress(); 
-      let allowlistMaxMintAmount;
         
+      // allowlistAddressesはALでここからウォレットアドレスの一覧を取得
       nameMap = allowlistAddresses.map( list => list[0] );
+      // リストからleafNodeを作成
       leafNodes = allowlistAddresses.map(addr => ethers.utils.solidityKeccak256(['address', 'uint16'], [addr[0] , addr[1]]));
+      // マークルツリーを作成
       merkleTree = new MerkleTree(leafNodes, keccak256, { sortPairs: true});
+      // メタマスクのアドレスがウォレット一覧に存在する行番号を取得
       addressId = nameMap.indexOf(address);
+      // nameMap.indexOf(address);で値がヒットしなかった場合にaddressId が-1となる
       if( addressId == -1){
-        allowlistMaxMintAmount = 0;
+        // 対象アドレスw抽出
         claimingAddress = ethers.utils.solidityKeccak256(['address', 'uint16'], [allowlistAddresses[0][0] , allowlistAddresses[0][1]]);
+        // ハッシュを作成
         hexProof = merkleTree.getHexProof(claimingAddress);    
       }else{
-        allowlistMaxMintAmount = allowlistAddresses[addressId][1];
+        // 対象アドレスw抽出
         claimingAddress = ethers.utils.solidityKeccak256(['address', 'uint16'], [allowlistAddresses[addressId][0] , allowlistAddresses[addressId][1]]);
-        console.log('claimingAddress=' + claimingAddress);
+        // 証明する為のハッシュを作成
         hexProof = merkleTree.getHexProof(claimingAddress);    
       }
+
+      console.log("hexProof=" + hexProof)
+      // Al数を取得
       const alNumber = Number(allowlistUserAmountData);
-      console.log('quantity=' + quantity);
-      console.log('alNumber=' + alNumber);
-      console.log('hexProof=' + hexProof);
       try{
         if(quantity == "0" || alNumber == 0){
           alert('Cannot mint if AL count is 0 or mint count is 0. / AL数が0またはミント数が0の場合はミントできません。');
@@ -171,8 +182,7 @@ const Home: NextPage = () => {
           const price = Number(setting.TOKEN_PRICE) * Number(quantity);
           // ガス代の計算
           const tempgasfixlimit = await contract.estimateGas.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(String(price))});
-          console.log("magic:",tempgasfixlimit.toNumber());
-          console.log("increaseGasLimit=" + increaseGasLimit(tempgasfixlimit));
+          // Mint関数の呼び出し
           await contract.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(String(price)), gasLimit: increaseGasLimit(tempgasfixlimit)});
           alert('Starting to execute a transaction / トランザクションを開始しました');
           location.reload();
