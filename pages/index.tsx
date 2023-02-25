@@ -18,7 +18,7 @@ const Home: NextPage = () => {
   let merkleTree;
   let addressId = 1;
   let claimingAddress;
-  let hexProof;
+  let hexProof: string;
   
   const [mintNum, setMintNum] = useState(0);
   const [alNum, setAlNum] = useState(0);
@@ -112,10 +112,8 @@ const Home: NextPage = () => {
           // ALをいくつ持っているかをセットする
           setAllowlistUserAmountData(0);
         } else {
-          // 対象のコントラクト呼び出し
-          const contract = await new ethers.Contract(contractAddress, abi, signer);
-          // AL数-現在のミント数をコントラクトから取得する＝残りのAL数を取得
-          setAlNum(num - await contract.getConsumedAllocation(address));
+          // AL数
+          setAlNum(num);
           // 持っているAL数を取得
           setAllowlistUserAmountData(num);
         }
@@ -160,19 +158,14 @@ const Home: NextPage = () => {
       // メタマスクのアドレスがウォレット一覧に存在する行番号を取得
       addressId = nameMap.indexOf(address);
       // nameMap.indexOf(address);で値がヒットしなかった場合にaddressId が-1となる
-      if( addressId == -1){
-        // 対象アドレスw抽出
+      if( addressId != -1){
+        // 対象アドレス抽出
         claimingAddress = ethers.utils.solidityKeccak256(['address', 'uint16'], [allowlistAddresses[0][0] , allowlistAddresses[0][1]]);
         // ハッシュを作成
         hexProof = merkleTree.getHexProof(claimingAddress);    
-      }else{
-        // 対象アドレスw抽出
-        claimingAddress = ethers.utils.solidityKeccak256(['address', 'uint16'], [allowlistAddresses[addressId][0] , allowlistAddresses[addressId][1]]);
-        // 証明する為のハッシュを作成
-        hexProof = merkleTree.getHexProof(claimingAddress);    
       }
 
-      console.log("hexProof=" + hexProof)
+      console.log("hexProof=" + hexProof);
       // Al数を取得
       const alNumber = Number(allowlistUserAmountData);
       try{
@@ -180,10 +173,8 @@ const Home: NextPage = () => {
           alert('Cannot mint if AL count is 0 or mint count is 0. / AL数が0またはミント数が0の場合はミントできません。');
         } else {
           const price = Number(setting.TOKEN_PRICE) * Number(quantity);
-          // ガス代の計算
-          const tempgasfixlimit = await contract.estimateGas.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(String(price))});
           // Mint関数の呼び出し
-          await contract.mintAllLimits(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(String(price)), gasLimit: increaseGasLimit(tempgasfixlimit)});
+          await contract.preMint(quantity, hexProof, alNumber, {value: ethers.utils.parseEther(String(price))});
           alert('Starting to execute a transaction / トランザクションを開始しました');
           location.reload();
         }
@@ -199,35 +190,35 @@ const Home: NextPage = () => {
         <Image className="min-w-full" src="/main_grap.png" alt="Main Image" width={500} height={500}/>
       </div>
       <div className="m-12 lg:m-32 px-12 py-6 lg:pt-8 lg:px-20 border-2 bg-black text-center border-[#FFFFFF] bg-center bg-contain bg-no-repeat">
-        <Image className="min-w-full" src="/CNPES.jpg" alt="Main Image" width={168} height={118}/>
-
-        <h1 className="text-2xl lg:text-3xl pt-2 lg:pt-4 lg:pb-6 text-white font-['Impact']"> {mintNum} / 1700</h1>
-        { (!disabledFlag && mintNum < 1700) && <a className="text-2xl lg:text-3xl pt-2 lg:pt-8 lg:pb-8 text-white font-['Impact']">please connect wallet</a>}
-        { (disabledFlag && mintNum < 1700) && <a className="text-2xl lg:text-3xl pt-2 lg:pt-8 lg:pb-8 text-white font-['Impact']">{alNum} </a>}
-        { (disabledFlag && mintNum < 1700) && <a className="text-2xl lg:text-3xl pt-2 lg:pt-8 lg:pb-8 text-[#99CDDB] font-['Impact'] ">AL</a>}<br/>
+        <h1 className="text-2xl lg:text-4xl pt-2 lg:pt-4 lg:pb-6 text-white font-['Impact']">ETH MASKS NFT</h1>
+        <h1 className="text-2xl lg:text-4xl pt-2 lg:pt-4 lg:pb-6 text-white font-['Impact']">PRICE: 0.001 ETH</h1>
+        <h1 className="text-2xl lg:text-4xl pt-2 lg:pt-4 lg:pb-6 text-white font-['Impact']"> {mintNum} / 10000</h1>
+        { (!disabledFlag && mintNum < 10000) && <a className="text-2xl lg:text-3xl pt-2 lg:pt-8 lg:pb-8 text-white font-['Impact']">please connect wallet</a>}
+        { (disabledFlag && mintNum < 10000) && <a className="text-2xl lg:text-3xl pt-2 lg:pt-8 lg:pb-8 text-white font-['Impact']">{alNum} </a>}
+        { (disabledFlag && mintNum < 10000) && <a className="text-2xl lg:text-3xl pt-2 lg:pt-8 lg:pb-8 text-[#99CDDB] font-['Impact'] ">AL</a>}<br/>
         
         <div className="pt-2 lg:pt-6 pb-7">
-        { (disabledFlag && mintNum < 1700) && <button type="button" className="cursor-pointer text-2xl lg:text-3xl inline-flex flex-shrink-0 justify-center items-center gap-2 h-[1.375rem] w-[1.375rem] lg:h-[2.375rem] lg:w-[2.375rem]
+        { (disabledFlag && mintNum < 10000) && <button type="button" className="cursor-pointer text-2xl lg:text-3xl inline-flex flex-shrink-0 justify-center items-center gap-2 h-[1.375rem] w-[1.375rem] lg:h-[2.375rem] lg:w-[2.375rem]
           border-[#FFFFFF] border-transparent font-['Impact'] bg-[#99CDDB] text-[#FFFFFF] hover:text-[#99CDDB] hover:bg-[#FFFFFF] focus:outline-none focus:ring-2
           focus:ring-[#99CDDB] focus:ring-offset-2 transition-all  rounded-full dark:focus:ring-offset-gray-800" onClick={mintQuantityMinus}>
           -</button>}
-          { (disabledFlag && mintNum < 1700) && <a className="text-2xl lg:text-3xl px-8 lg:pt-6 lg:pb-6 text-white font-['Impact']">{mintQuantity}</a>}
-          { (disabledFlag && mintNum < 1700) && <button type="button" className="cursor-pointer text-2xl lg:text-3xl inline-flex flex-shrink-0 justify-center items-center gap-2 h-[1.375rem] w-[1.375rem] lg:h-[2.375rem] lg:w-[2.375rem]
+          { (disabledFlag && mintNum < 10000) && <a className="text-2xl lg:text-3xl px-8 lg:pt-6 lg:pb-6 text-white font-['Impact']">{mintQuantity}</a>}
+          { (disabledFlag && mintNum < 10000) && <button type="button" className="cursor-pointer text-2xl lg:text-3xl inline-flex flex-shrink-0 justify-center items-center gap-2 h-[1.375rem] w-[1.375rem] lg:h-[2.375rem] lg:w-[2.375rem]
           border-[#FFFFFF] border-transparent rounded-full font-['Impact'] bg-[#99CDDB] text-[#FFFFFF] hover:text-[#99CDDB] hover:bg-[#FFFFFF] 
           focus:outline-none focus:ring-2 focus:ring-[#99CDDB] focus:ring-offset-2 transition-all dark:focus:ring-offset-gray-800" onClick={mintQuantityPlus}>
           +</button>}<br/>
         </div>
-        { (!disabledFlag && mintNum < 1700) && <button type="button" className="text-xl lg:text-2xl py-1 lg:py-3 px-12 lg:px-24 inline-flex justify-center items-center gap-2 rounded-full border border-transparent
+        { (!disabledFlag && mintNum < 10000) && <button type="button" className="text-xl lg:text-2xl py-1 lg:py-3 px-12 lg:px-24 inline-flex justify-center items-center gap-2 rounded-full border border-transparent
         bg-[#FFFFFF] border-yellow-200 font-['Impact'] text-[#99CDDB] hover:yellow-500 hover:bg-[#99CDDB] hover:text-[#FFFFFF] hover:border-[#FFFFFF]
           focus:outline-none focus:ring-2 focus:ring-yellow-200 focus:ring-offset-2 transition-all dark:focus:ring-offset-gray-800" onClick={() => connectWallet()}>
         CONNECT WALLET</button>}
-        { (disabledFlag && mintNum < 1700) && <button type="button" className="text-xl lg:text-2xl py-1 lg:py-3 px-12 lg:px-24 inline-flex justify-center items-center gap-2 rounded-full border border-transparent
+        { (disabledFlag && mintNum < 10000) && <button type="button" className="text-xl lg:text-2xl py-1 lg:py-3 px-12 lg:px-24 inline-flex justify-center items-center gap-2 rounded-full border border-transparent
         bg-[#FFFFFF] border-yellow-200 font-['Impact'] text-[#99CDDB] hover:yellow-500 hover:bg-[#99CDDB] hover:text-[#FFFFFF] hover:border-[#FFFFFF]
           focus:outline-none focus:ring-2 focus:ring-yellow-200 focus:ring-offset-2 transition-all dark:focus:ring-offset-gray-800" onClick={() => nftMint()}>
         MINT NOW</button>}
-        { (disabledFlag && mintNum >= 1700) && <button type="button" className="text-xl lg:text-2xl py-1 lg:py-3 px-12 lg:px-24 inline-flex justify-center items-center gap-2 rounded-full border border-transparent
+        { (disabledFlag && mintNum >= 10000) && <button type="button" className="text-xl lg:text-2xl py-1 lg:py-3 px-12 lg:px-24 inline-flex justify-center items-center gap-2 rounded-full border border-transparent
         bg-[#FFFFFF] border-yellow-200 font-['Impact'] text-[#99CDDB] hover:yellow-500 hover:bg-[#99CDDB] hover:text-[#FFFFFF] hover:border-[#FFFFFF]
-          focus:outline-none focus:ring-2 focus:ring-yellow-200 focus:ring-offset-2 transition-all dark:focus:ring-offset-gray-800" onClick={() => nftMint()}>
+          focus:outline-none focus:ring-2 focus:ring-yellow-200 focus:ring-offset-2 transition-all dark:focus:ring-offset-gray-800">
         SALE END</button>}
       </div>
     </div>
